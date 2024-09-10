@@ -6,16 +6,21 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 22:28:42 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 17:56:55 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/10 19:48:50 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-/*void	ft_usleep() // needed???????
+int	ft_usleep(size_t milliseconds)
 {
-	;
-}*/
+	size_t	start;
+
+	start = get_time();
+	while ((get_time() - start) < milliseconds)
+		usleep(500);
+	return (0);
+}
 
 int	ft_destroy(t_data *data)
 {
@@ -23,30 +28,30 @@ int	ft_destroy(t_data *data)
 	int	status;
 
 	i = 0;
+	while (i < data->num_philos)
+	{
+		status = mutex_functions(&data->forks[i].fork, DESTROY);
+		if (status != 0)
+			return (status);
+		i++;
+	}
 	status = mutex_functions(&data->print_lock, DESTROY);
 	if (status != 0)
 		return (status);
 	status = mutex_functions(&data->mutex, DESTROY);
 	if (status != 0)
 		return (status);
-	while (i < data->num_philos)
-	{
-		status = mutex_functions(&data->forks->fork, DESTROY);
-		if (status != 0)
-			return (status);
-		i++;
-	}
 	return (0);
 }
 
-void	print_status(int id, char *str, t_data *data) // Add mutex if used by more threads
+void	print_status(int id, char *str, t_data *data)
 {
 	size_t	time;
 
 	mutex_functions(&data->print_lock, LOCK);
 	time = get_time() - data->start_simmulation;
-	//if (!data->end_simulation)
-	printf("%zu: philo %d %s\n", time, id, str);
+	if (!data->end_simulation)
+		printf("%zu: philo %d %s\n", time, id, str);
 	mutex_functions(&data->print_lock, UNLOCK);
 }
 

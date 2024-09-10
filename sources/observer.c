@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 18:09:03 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/10 19:58:47 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,12 @@ static bool	philos_full(t_data *data)
 
 static void	philos_dead(t_data *data, t_philo *philo)
 {
-	size_t	current_time;
-
-	current_time = get_time();
-	//pthread_mutex_lock(&philo->philo_mtx); // NEW
-	if ((current_time - philo->last_meal) > data->time_to_die)
+	if ((get_time() - philo->last_meal) > data->time_to_die)
 	{
-		data->end_simulation = true;
 		data->dead_flag = true;
-		print_status(philo->id, "died", data);
-	//	pthread_mutex_unlock(&philo->philo_mtx); // NEW
+		print_status(philo->id, "died 💀", data);
+		data->end_simulation = true;
 	}
-	//pthread_mutex_unlock(&philo->philo_mtx); // NEW
 }
 
 void	*ft_observer(void *pointer)
@@ -69,7 +63,7 @@ void	*ft_observer(void *pointer)
 		if (philos_full(data))
 			data->end_simulation = true;
 		mutex_functions(&data->mutex, UNLOCK);
-		usleep(100);
+		ft_usleep(1);
 	}
 	return (pointer);
 }

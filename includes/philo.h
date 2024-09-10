@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 17:49:08 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 18:06:47 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/10 18:54:48 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ bool	get_philos_ready(t_data *data);
 size_t	get_time(void);
 void	print_status(int id, char *str, t_data *data);
 int		ft_destroy(t_data *data);
+int		ft_usleep(size_t milliseconds);
 
 /*****-Utils-*****/
 void	ft_putstr_fd(const char *s, int fd);

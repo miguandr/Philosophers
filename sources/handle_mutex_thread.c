@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 22:17:54 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 13:48:31 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/10 19:12:51 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	thread_error(int status, t_mtx_type type)
 		return (ft_error2(8));
 	else if (status == EPERM)
 		return (ft_error2(9));
-	if (status == EINVAL && type == CREATE)
+	else if (status == EINVAL && type == CREATE)
 		return (ft_error2(10));
 	else if (status == EINVAL && (type == INIT || type == DETACH))
 		return (ft_error2(11));
@@ -70,7 +70,7 @@ int	thread_funtions(pthread_t *thread, void *(*foo)(void *),
 {
 	if (type == CREATE)
 		return (thread_error(pthread_create(thread, NULL, foo, data), type));
-	if (type == JOIN)
+	else if (type == JOIN)
 		return (thread_error(pthread_join(*thread, NULL), type));
 	else if (type == DETACH)
 		return (thread_error(pthread_detach(*thread), type));
