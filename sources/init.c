@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 21:21:19 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 19:10:13 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/11 19:29:28 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	init_philos(t_philo *philos, t_data *data)
 		philos[i].id = i + 1;
 		philos[i].meals_eaten = 0;
 		philos[i].last_meal = get_time();
-		philos[i].full = false;
+		//philos[i].full = false;
 		if (mutex_functions(&philos[i].philo_mtx, INIT) != 0)
 			return ;
 		i++;

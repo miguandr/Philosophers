@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 19:58:47 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/11 19:28:29 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static bool	philos_full(t_data *data)
 			return (false);
 		i++;
 	}
-	printf("All philos have eaten!\n"); // DELETE?
+	printf("All philos have eaten!\n");
 	return (true);
 }
 
@@ -63,7 +63,7 @@ void	*ft_observer(void *pointer)
 		if (philos_full(data))
 			data->end_simulation = true;
 		mutex_functions(&data->mutex, UNLOCK);
-		ft_usleep(1);
+		ft_usleep(10);
 	}
 	return (pointer);
 }
