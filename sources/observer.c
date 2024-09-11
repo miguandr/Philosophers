@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 19:28:29 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/11 21:11:02 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,19 @@ static bool	philos_full(t_data *data)
 			return (false);
 		i++;
 	}
-	printf("All philos have eaten!\n");
+	printf("\nAll philosophers have eaten! 🍝\n");
 	return (true);
 }
 
 static void	philos_dead(t_data *data, t_philo *philo)
 {
-	if ((get_time() - philo->last_meal) > data->time_to_die)
+	size_t	last_meal;
+
+	mutex_functions(&philo->philo_mtx, LOCK);
+	last_meal = philo->last_meal;
+	mutex_functions(&philo->philo_mtx, UNLOCK);
+	if ((get_time() - last_meal) > data->time_to_die)
 	{
-		data->dead_flag = true;
 		print_status(philo->id, "died 💀", data);
 		data->end_simulation = true;
 	}

@@ -3,7 +3,7 @@ NAME	= philosophers
 
 # Compiler and Flags
 CC		= cc
-CFLAGS	= -Wall -Wextra -Werror -g
+CFLAGS	= -Wall -Wextra -Werror
 
 # Includes
 INC	=	-I ./includes/
@@ -27,15 +27,17 @@ OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_DIR), $(OBJ))
 
 # Build rules
-all: $(NAME)
+all: $(OBJ_DIR) $(NAME)
+
+# Create object directory
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
 
 # Compile object files from source files
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
 	@$(CC) $(CFLAGS) -c $< -o $@ $(INC)
 
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
-
+# Linking rule
 $(NAME): $(OBJS)
 	@echo "Compiling Philosophers..."
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(INC)

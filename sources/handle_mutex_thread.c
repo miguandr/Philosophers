@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 22:17:54 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/10 19:12:51 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/11 21:14:01 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,26 @@ int	thread_funtions(pthread_t *thread, void *(*foo)(void *),
 		return (thread_error(pthread_detach(*thread), type));
 	else
 		return (ft_error2(7));
+}
+
+int	ft_destroy(t_data *data)
+{
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < data->num_philos)
+	{
+		status = mutex_functions(&data->forks[i], DESTROY);
+		if (status != 0)
+			return (status);
+		i++;
+	}
+	status = mutex_functions(&data->print_lock, DESTROY);
+	if (status != 0)
+		return (status);
+	status = mutex_functions(&data->mutex, DESTROY);
+	if (status != 0)
+		return (status);
+	return (0);
 }

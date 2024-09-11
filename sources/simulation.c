@@ -6,42 +6,32 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 19:29:42 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/11 21:19:17 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-static void	one_philo(t_data *data, t_philo *philo)
-{
-	ft_usleep(data->time_to_die);
-	data->dead_flag = true;
-	print_status(philo->id, "died 💀", data);
-	data->end_simulation = true;
-	mutex_functions(philo->right_fork, UNLOCK);
-}
-
-void	ft_eat(t_data *data, t_philo *philo)
+static void	ft_eat(t_data *data, t_philo *philo)
 {
 	mutex_functions(philo->right_fork, LOCK);
 	print_status(philo->id, "took the right fork", data);
 	if (data->num_philos == 1)
 	{
-		one_philo(data, philo);
+		ft_usleep(data->time_to_die);
+		print_status(philo->id, "died 💀", data);
+		data->end_simulation = true;
+		mutex_functions(philo->right_fork, UNLOCK);
 		return ;
 	}
 	mutex_functions(philo->left_fork, LOCK);
 	print_status(philo->id, "took the left fork", data);
-	print_status(philo->id, "is eating", data);
-
 	mutex_functions(&philo->philo_mtx, LOCK);
 	philo->last_meal = get_time();
 	philo->meals_eaten++;
 	mutex_functions(&philo->philo_mtx, UNLOCK);
-
+	print_status(philo->id, "is eating", data);
 	ft_usleep(data->time_to_eat);
-	//if (philo->meals_eaten == data->num_times_to_eat)
-	//	philo->full = true;
 	mutex_functions(philo->right_fork, UNLOCK);
 	mutex_functions(philo->left_fork, UNLOCK);
 }
@@ -51,7 +41,7 @@ static void	philos_routine(t_data *data, t_philo *philo)
 	while (!data->end_simulation)
 	{
 		ft_eat(data, philo);
-		if (data->dead_flag || data->end_simulation)
+		if (data->end_simulation)
 			break ;
 		print_status(philo->id, "is sleeping", philo->data);
 		ft_usleep(philo->data->time_to_sleep);
@@ -74,13 +64,9 @@ static void	*dinner_simulation(void *pointer)
 	if (data->start_simmulation == 0)
 		data->start_simmulation = get_time();
 	mutex_functions(&data->mutex, UNLOCK);
-
-	// maybe a mutex for philo here?
 	philos->last_meal = data->start_simmulation;
-
 	if (philos->id % 2 == 0)
 		ft_usleep(data->time_to_eat / 2);
-
 	while (!data->end_simulation)
 		philos_routine(data, philos);
 	return (NULL);
@@ -94,7 +80,8 @@ static void	start_philos(t_data *data)
 	i = 0;
 	while (i < data->num_philos)
 	{
-		status = pthread_create(&data->philos[i].thread, NULL, dinner_simulation, &data->philos[i]);
+		status = pthread_create(&data->philos[i].thread,
+				NULL, dinner_simulation, &data->philos[i]);
 		if (status != 0)
 		{
 			ft_putstr_fd("problema en pthread_create\n", 1);
@@ -103,8 +90,6 @@ static void	start_philos(t_data *data)
 		}
 		i++;
 	}
-	//while (!get_philos_ready(data))
-	//	usleep(100);
 }
 
 void	start_program(t_data *data)
