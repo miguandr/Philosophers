@@ -6,12 +6,20 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 22:17:54 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 21:14:01 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 14:32:38 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
+/**
+ * Handles errors related to mutex operations based on the error status and type.
+ * @status: The error code returned by a mutex function.
+ * @type: The type of mutex operation (LOCK, UNLOCK, INIT, DESTROY).
+ *
+ * This function checks the status of a mutex operation and calls
+ * the appropriate error handler. Returns 1 if an error is found, otherwise 0.
+ */
 int	mutex_error(int status, t_mtx_type type)
 {
 	if (status == EINVAL && (type == LOCK || type == UNLOCK || type == DESTROY))
@@ -30,6 +38,14 @@ int	mutex_error(int status, t_mtx_type type)
 		return (0);
 }
 
+/**
+ * Performs various mutex-related operations based on the type provided.
+ * @mutex: Pointer to the mutex object.
+ * @type: The type of operation (LOCK, UNLOCK, INIT, DESTROY).
+ *
+ * This function performs the appropriate mutex operation and checks for errors.
+ * Returns 0 if the operation is successful, otherwise returns the error code.
+ */
 int	mutex_functions(t_mtx *mutex, t_mtx_type type)
 {
 	int	status;
@@ -47,6 +63,15 @@ int	mutex_functions(t_mtx *mutex, t_mtx_type type)
 	return (mutex_error(status, type));
 }
 
+/**
+ * Handles errors related to thread operations based on the error status
+ * and type.
+ * @status: The error code returned by a thread function.
+ * @type: The type of thread operation (CREATE, JOIN, DETACH).
+ *
+ * This function checks the status of a thread operation and calls
+ * the appropriate error handler. Returns 1 if an error is found, otherwise 0.
+ */
 int	thread_error(int status, t_mtx_type type)
 {
 	if (status == EAGAIN)
@@ -65,6 +90,18 @@ int	thread_error(int status, t_mtx_type type)
 		return (0);
 }
 
+/**
+ * Manages thread creation, joining, or detaching based on the
+ * provided type.
+ * @thread: Pointer to the pthread_t thread object.
+ * @foo: Pointer to the function the thread will execute.
+ * @data: Pointer to the data passed to the thread.
+ * @type: The type of thread operation (CREATE, JOIN, DETACH).
+ *
+ * This function handles thread operations such as creating, joining,
+ * or detaching threads.
+ * It returns 0 on success or the appropriate error code on failure.
+ */
 int	thread_funtions(pthread_t *thread, void *(*foo)(void *),
 	void *data, t_mtx_type type)
 {
@@ -78,6 +115,14 @@ int	thread_funtions(pthread_t *thread, void *(*foo)(void *),
 		return (ft_error2(7));
 }
 
+/**
+ * Destroys all mutexes used by the philosophers simulation.
+ * @data: Pointer to the data structure holding the mutexes.
+ *
+ * This function iterates through the forks and other mutexes
+ * used in the simulation, destroying each one. Returns 0 on success,
+ * or an error code if any mutex fails to be destroyed.
+ */
 int	ft_destroy(t_data *data)
 {
 	int	i;

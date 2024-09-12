@@ -6,12 +6,21 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 18:22:00 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 20:35:08 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 14:21:35 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
+/**
+ * Checks if the provided arguments are valid integers.
+ * @ac: Argument count.
+ * @args: Array of arguments (strings).
+ *
+ * This function iterates through each argument and checks if
+ * they contain only numeric characters (digits).
+ * Returns 1 if a non-numeric character is found, otherwise returns 0.
+ */
 static int	check_args(int ac, char **args)
 {
 	int	i;
@@ -32,6 +41,15 @@ static int	check_args(int ac, char **args)
 	return (0);
 }
 
+/**
+ * Validates the input arguments for the philosophers simulation.
+ * @ac: Argument count.
+ * @args: Array of arguments (strings).
+ *
+ * This function verifies that the arguments are within acceptable ranges
+ * for the number of philosophers and the timing parameters. If any
+ * invalid input is detected, it returns an error code and message.
+ */
 int	check_input(int ac, char **args)
 {
 	if (check_args(ac, args))

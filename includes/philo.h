@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 17:49:08 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 21:25:05 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 14:23:25 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ typedef struct s_philo
 	t_mtx		*left_fork;
 	t_mtx		philo_mtx;
 }	t_philo;
-
 
 /*****-Checks-*****/
 int		check_input(int ac, char **args);

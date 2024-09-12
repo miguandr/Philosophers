@@ -6,26 +6,36 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 21:19:17 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 15:40:20 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
+/**
+ * The action a philosopher takes when eating.
+ * @data: Pointer to the data structure holding simulation information.
+ * @philo: Pointer to the philosopher performing the action.
+ *
+ * The philosopher locks the right fork first, and if they are the only one,
+ * waits for the time to die and declares death. Otherwise, they lock the
+ * left fork, update the last meal time, and increment their meals eaten counter.
+ * After eating for the required time, the forks are unlocked.
+ */
 static void	ft_eat(t_data *data, t_philo *philo)
 {
 	mutex_functions(philo->right_fork, LOCK);
-	print_status(philo->id, "took the right fork", data);
+	print_status(philo->id, "has taken a fork", data);
 	if (data->num_philos == 1)
 	{
 		ft_usleep(data->time_to_die);
-		print_status(philo->id, "died 💀", data);
+		print_status(philo->id, "died", data);
 		data->end_simulation = true;
 		mutex_functions(philo->right_fork, UNLOCK);
 		return ;
 	}
 	mutex_functions(philo->left_fork, LOCK);
-	print_status(philo->id, "took the left fork", data);
+	print_status(philo->id, "has taken a fork", data);
 	mutex_functions(&philo->philo_mtx, LOCK);
 	philo->last_meal = get_time();
 	philo->meals_eaten++;
@@ -36,6 +46,16 @@ static void	ft_eat(t_data *data, t_philo *philo)
 	mutex_functions(philo->left_fork, UNLOCK);
 }
 
+/**
+ * Routine for each philosopher, which consists of eating, sleeping
+ * and thinking.
+ * @data: Pointer to the data structure holding simulation information.
+ * @philo: Pointer to the philosopher performing the routine.
+ *
+ * The philosopher continuously performs the routine as long as the simulation
+ * is running. They eat, sleep, and then think, with respective delays for each
+ * action.
+ */
 static void	philos_routine(t_data *data, t_philo *philo)
 {
 	while (!data->end_simulation)
@@ -49,6 +69,14 @@ static void	philos_routine(t_data *data, t_philo *philo)
 	}
 }
 
+/**
+ * Simulation for each philosopher thread.
+ * @pointer: A pointer to the philosopher passed to the thread.
+ *
+ * Each philosopher thread waits until all philosophers are ready, records
+ * the start time, and initiates its routine. Even-numbered philosophers
+ * wait for half the eating time before starting to avoid deadlocks.
+ */
 static void	*dinner_simulation(void *pointer)
 {
 	t_philo	*philos;
@@ -59,10 +87,8 @@ static void	*dinner_simulation(void *pointer)
 	set_ready_count(data);
 	while (!get_philos_ready(data))
 		ft_usleep(1);
-
 	mutex_functions(&data->mutex, LOCK);
-	if (data->start_simmulation == 0)
-		data->start_simmulation = get_time();
+	data->start_simmulation = get_time();
 	mutex_functions(&data->mutex, UNLOCK);
 	philos->last_meal = data->start_simmulation;
 	if (philos->id % 2 == 0)
@@ -72,6 +98,14 @@ static void	*dinner_simulation(void *pointer)
 	return (NULL);
 }
 
+/**
+ * Starts the philosopher threads for the simulation.
+ * @data: Pointer to the data structure holding simulation information.
+ *
+ * This function creates a thread for each philosopher and starts the
+ * dining simulation.
+ * If thread creation fails, the function terminates and cleans up resources.
+ */
 static void	start_philos(t_data *data)
 {
 	int			i;
@@ -84,7 +118,6 @@ static void	start_philos(t_data *data)
 				NULL, dinner_simulation, &data->philos[i]);
 		if (status != 0)
 		{
-			ft_putstr_fd("problema en pthread_create\n", 1);
 			ft_destroy(data);
 			return ;
 		}
@@ -92,6 +125,14 @@ static void	start_philos(t_data *data)
 	}
 }
 
+/**
+ * Main program logic to start the simulation and join threads.
+ * @data: Pointer to the data structure holding simulation information.
+ *
+ * This function starts the observer thread to monitor the simulation and
+ * philosopher threads to run the dining simulation. It waits for all threads
+ * to finish before exiting.
+ */
 void	start_program(t_data *data)
 {
 	pthread_t	observer;

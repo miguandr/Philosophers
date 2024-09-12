@@ -6,12 +6,20 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 19:21:21 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/11 21:09:04 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 14:22:16 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
+/**
+ * Prints an error message based on the error code provided.
+ * @error_num: Error code corresponding to a specific error message.
+ *
+ * This function prints out an error message related to invalid input
+ * or failed operations. It also provides a hint about the correct input format.
+ * Returns 1 after printing the message.
+ */
 int	ft_error(int error_num)
 {
 	const char	*message;
@@ -35,6 +43,14 @@ int	ft_error(int error_num)
 	return (1);
 }
 
+/**
+ * Prints a detailed error message related to mutexes or threads.
+ * @error_num: Error code corresponding to a specific error condition.
+ *
+ * This function provides detailed error messages for various issues
+ * related to mutex handling or thread creation. It returns 1 after
+ * printing the corresponding error message.
+ */
 int	ft_error2(int error_num)
 {
 	const char	*message;
