@@ -6,13 +6,21 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 20:04:05 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 21:00:49 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
+bool	end_simulation(t_data *data)
+{
+	bool	ended;
 
+	mutex_functions(&data->mutex, LOCK);
+	ended = data->end_simulation;
+	mutex_functions(&data->mutex, UNLOCK);
+	return (ended);
+}
 
 /**
  * Checks if all philosophers have eaten the required number of times.
@@ -86,27 +94,22 @@ void	*ft_observer(void *pointer)
 	int		i;
 
 	data = (t_data *)pointer;
-	while (!data->end_simulation)
+	while (!end_simulation(data))
 	{
 		i = 0;
 		while (i < data->num_philos)
 		{
 			philo = &data->philos[i];
 			philos_dead(data, philo);
-			mutex_functions(&data->mutex, LOCK);
-			if (data->end_simulation)
-			{
-				mutex_functions(&data->mutex, UNLOCK);
+			if (end_simulation(data))
 				break ;
-			}
-			mutex_functions(&data->mutex, UNLOCK);
 			i++;
 		}
 		mutex_functions(&data->mutex, LOCK);
 		if (philos_full(data))
 			data->end_simulation = true;
 		mutex_functions(&data->mutex, UNLOCK);
-		ft_usleep(10);
+		ft_usleep(1);
 	}
 	return (pointer);
 }
