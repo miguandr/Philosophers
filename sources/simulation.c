@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 20:34:11 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 21:35:41 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,16 +116,22 @@ static void	*dinner_simulation(void *pointer)
  * dining simulation.
  * If thread creation fails, the function terminates and cleans up resources.
  */
-static void	start_philos(t_data *data)
+static void	start_philos(t_data *data, pthread_t *observer)
 {
 	int			i;
 	int			status;
 
+
 	i = 0;
+	if (thread_funtions(observer, ft_observer, &data->philos, CREATE))
+	{
+		ft_destroy(data);
+		return ;
+	}
 	while (i < data->num_philos)
 	{
-		status = pthread_create(&data->philos[i].thread,
-				NULL, dinner_simulation, &data->philos[i]);
+		status = thread_funtions(&data->philos[i].thread,
+				dinner_simulation, &data->philos[i], CREATE);
 		if (status != 0)
 		{
 			ft_destroy(data);
@@ -151,12 +157,7 @@ void	start_program(t_data *data)
 	i = 0;
 	if (data->num_times_to_eat == 0)
 		return ;
-	if (pthread_create(&observer, NULL, ft_observer, &data->philos))
-	{
-		ft_destroy(data);
-		return ;
-	}
-	start_philos(data);
+	start_philos(data, &observer);
 	while (i < data->num_philos)
 	{
 		if (thread_funtions(&data->philos[i].thread, NULL,

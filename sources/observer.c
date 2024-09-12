@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 21:00:49 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 21:41:12 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	*ft_observer(void *pointer)
 		if (philos_full(data))
 			data->end_simulation = true;
 		mutex_functions(&data->mutex, UNLOCK);
-		ft_usleep(1);
+		ft_usleep(10);
 	}
 	return (pointer);
 }
