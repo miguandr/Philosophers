@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 22:28:42 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 14:51:28 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 19:51:24 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,9 @@ void	print_status(int id, char *str, t_data *data)
 	size_t	time;
 
 	mutex_functions(&data->print_lock, LOCK);
+	mutex_functions(&data->mutex, LOCK);
 	time = get_time() - data->start_simmulation;
+	mutex_functions(&data->mutex, UNLOCK);
 	if (!data->end_simulation)
 		printf("%zu %d %s\n", time, id, str);
 	mutex_functions(&data->print_lock, UNLOCK);
