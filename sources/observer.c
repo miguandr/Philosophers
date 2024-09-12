@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 19:00:43 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 19:38:13 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,9 @@ static void	philos_dead(t_data *data, t_philo *philo)
 	if ((get_time() - last_meal) > data->time_to_die)
 	{
 		print_status(philo->id, "died", data);
+		mutex_functions(&data->mutex, LOCK);
 		data->end_simulation = true;
+		mutex_functions(&data->mutex, UNLOCK);
 	}
 }
 
@@ -90,9 +92,9 @@ void	*ft_observer(void *pointer)
 		while (i < data->num_philos)
 		{
 			philo = &data->philos[i];
-			mutex_functions(&data->mutex, LOCK);
+			//mutex_functions(&data->mutex, LOCK);
 			philos_dead(data, philo);
-			mutex_functions(&data->mutex, UNLOCK);
+			//mutex_functions(&data->mutex, UNLOCK);
 			if (data->end_simulation)
 				break ;
 			i++;
