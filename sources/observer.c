@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 14:52:51 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 17:58:44 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ static bool	philos_full(t_data *data)
 			return (false);
 		i++;
 	}
+	mutex_functions(&data->mutex, LOCK);
 	printf("\nAll philosophers have eaten! 🍝\n");
+	mutex_functions(&data->mutex, UNLOCK);
 	return (true);
 }
 

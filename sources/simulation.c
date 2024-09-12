@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 15:40:20 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 17:59:09 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ static void	ft_eat(t_data *data, t_philo *philo)
 	mutex_functions(&philo->philo_mtx, UNLOCK);
 	print_status(philo->id, "is eating", data);
 	ft_usleep(data->time_to_eat);
-	mutex_functions(philo->right_fork, UNLOCK);
 	mutex_functions(philo->left_fork, UNLOCK);
+	mutex_functions(philo->right_fork, UNLOCK);
 }
 
 /**
