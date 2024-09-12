@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 19:17:19 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 20:16:41 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static void	ft_eat(t_data *data, t_philo *philo)
  */
 static void	philos_routine(t_data *data, t_philo *philo)
 {
-	while (!data->end_simulation)
+	while (1)
 	{
 		ft_eat(data, philo);
 		mutex_functions(&data->mutex, LOCK);
@@ -71,8 +71,22 @@ static void	philos_routine(t_data *data, t_philo *philo)
 		}
 		mutex_functions(&data->mutex, UNLOCK);
 		print_status(philo->id, "is sleeping", philo->data);
+		mutex_functions(&data->mutex, LOCK);
+		if (data->end_simulation)
+		{
+			mutex_functions(&data->mutex, UNLOCK);
+			break ;
+		}
+		mutex_functions(&data->mutex, UNLOCK);
 		ft_usleep(philo->data->time_to_sleep);
 		print_status(philo->id, "is thinking", philo->data);
+		mutex_functions(&data->mutex, LOCK);
+		if (data->end_simulation)
+		{
+			mutex_functions(&data->mutex, UNLOCK);
+			break ;
+		}
+		mutex_functions(&data->mutex, UNLOCK);
 	}
 }
 

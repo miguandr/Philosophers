@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 19:42:46 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 20:04:05 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,13 @@ void	*ft_observer(void *pointer)
 		{
 			philo = &data->philos[i];
 			philos_dead(data, philo);
+			mutex_functions(&data->mutex, LOCK);
 			if (data->end_simulation)
+			{
+				mutex_functions(&data->mutex, UNLOCK);
 				break ;
+			}
+			mutex_functions(&data->mutex, UNLOCK);
 			i++;
 		}
 		mutex_functions(&data->mutex, LOCK);
