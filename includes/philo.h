@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 17:49:08 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 14:23:25 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 18:53:19 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ int		ft_usleep(size_t milliseconds);
 
 /*****-Observer-*****/
 void	*ft_observer(void *pointer);
+bool	check_end_simulation(t_data *data);
 
 /*****-Utils-*****/
 void	ft_putstr_fd(const char *s, int fd);

@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 17:59:09 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 19:17:19 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ static void	ft_eat(t_data *data, t_philo *philo)
 	{
 		ft_usleep(data->time_to_die);
 		print_status(philo->id, "died", data);
+		mutex_functions(&data->mutex, LOCK);
 		data->end_simulation = true;
+		mutex_functions(&data->mutex, UNLOCK);
 		mutex_functions(philo->right_fork, UNLOCK);
 		return ;
 	}
@@ -61,8 +63,13 @@ static void	philos_routine(t_data *data, t_philo *philo)
 	while (!data->end_simulation)
 	{
 		ft_eat(data, philo);
+		mutex_functions(&data->mutex, LOCK);
 		if (data->end_simulation)
+		{
+			mutex_functions(&data->mutex, UNLOCK);
 			break ;
+		}
+		mutex_functions(&data->mutex, UNLOCK);
 		print_status(philo->id, "is sleeping", philo->data);
 		ft_usleep(philo->data->time_to_sleep);
 		print_status(philo->id, "is thinking", philo->data);
@@ -90,7 +97,13 @@ static void	*dinner_simulation(void *pointer)
 	mutex_functions(&data->mutex, LOCK);
 	data->start_simmulation = get_time();
 	mutex_functions(&data->mutex, UNLOCK);
+
+	mutex_functions(&data->mutex, LOCK);
+	mutex_functions(&philos->philo_mtx, LOCK);
 	philos->last_meal = data->start_simmulation;
+	mutex_functions(&philos->philo_mtx, UNLOCK);
+	mutex_functions(&data->mutex, UNLOCK);
+
 	if (philos->id % 2 == 0)
 		ft_usleep(data->time_to_eat / 2);
 	while (!data->end_simulation)

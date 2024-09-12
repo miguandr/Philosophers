@@ -1,9 +1,9 @@
 # Name
-NAME	= philosophers
+NAME	= philo
 
 # Compiler and Flags
 CC		= cc
-CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror -fsanitize=thread
 
 # Includes
 INC	=	-I ./includes/
@@ -39,7 +39,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
 
 # Linking rule
 $(NAME): $(OBJS)
-	@echo "Compiling Philosophers..."
+	@echo "Compiling Philo..."
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(INC)
 	@echo "Philosophers ready."
 
@@ -48,7 +48,7 @@ clean:
 	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	@echo "Removing Philosophers..."
+	@echo "Removing Philo..."
 	@rm -f $(NAME)
 
 re: fclean all

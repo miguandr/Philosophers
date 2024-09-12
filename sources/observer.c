@@ -6,11 +6,13 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 17:58:44 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/12 19:00:43 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+
 
 /**
  * Checks if all philosophers have eaten the required number of times.
@@ -23,19 +25,23 @@
 static bool	philos_full(t_data *data)
 {
 	int	i;
+	int	meals_eaten;
 
 	i = 0;
 	if (data->num_times_to_eat == -1)
 		return (false);
 	while (i < data->num_philos)
 	{
-		if (data->philos[i].meals_eaten < data->num_times_to_eat)
+		mutex_functions(&data->philos->philo_mtx, LOCK);
+		meals_eaten = data->philos[i].meals_eaten;
+		mutex_functions(&data->philos->philo_mtx, UNLOCK);
+		if (meals_eaten < data->num_times_to_eat)
 			return (false);
 		i++;
 	}
-	mutex_functions(&data->mutex, LOCK);
+	mutex_functions(&data->print_lock, LOCK);
 	printf("\nAll philosophers have eaten! 🍝\n");
-	mutex_functions(&data->mutex, UNLOCK);
+	mutex_functions(&data->print_lock, UNLOCK);
 	return (true);
 }
 
