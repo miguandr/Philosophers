@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 21:21:19 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 12:07:07 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:07:42 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,9 +102,8 @@ void	init_data(t_data *data, t_mtx *forks, t_philo *philos, char **value)
 
 	data->philos = philos;
 	data->forks = forks;
-	data->end_simulation = false;
-	data->ready_count = 0;
 	data->dead_flag = 0;
+	data->full_flag = 0;
 	init_input(data, value);
 	if ((mutex_functions(&data->mutex, INIT) != 0
 			|| mutex_functions(&data->print_lock, INIT) != 0

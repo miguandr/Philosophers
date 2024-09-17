@@ -6,13 +6,13 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 12:41:35 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:15:39 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-int	is_dead(t_data *data) // NEW
+int	is_dead(t_data *data)
 {
 	mutex_functions(&data->dead_lock, LOCK);
 	if (data->dead_flag == 1)
@@ -34,52 +34,32 @@ int	is_dead(t_data *data) // NEW
  * left fork, update the last meal time, and increment their meals eaten counter.
  * After eating for the required time, the forks are unlocked.
  */
-static void	ft_eat(t_data *data, t_philo *philo)
+static int	ft_eat(t_data *data, t_philo *philo)
 {
 	mutex_functions(philo->right_fork, LOCK);
 	print_status(philo->id, "has taken a fork", data);
 	if (data->num_philos == 1)
 	{
 		ft_usleep(data->time_to_die);
-		print_status(philo->id, "died", data);
 		mutex_functions(philo->right_fork, UNLOCK);
-		return ;
+		return (1);
 	}
 	mutex_functions(philo->left_fork, LOCK);
 	print_status(philo->id, "has taken a fork", data);
-	philo->eating = 1;
 	print_status(philo->id, "is eating", data);
 	mutex_functions(&philo->philo_mtx, LOCK);
+	philo->eating = 1;
 	philo->last_meal = get_time();
 	philo->meals_eaten++;
 	mutex_functions(&philo->philo_mtx, UNLOCK);
-
 	ft_usleep(data->time_to_eat);
+	mutex_functions(&philo->philo_mtx, LOCK);
 	philo->eating = 0;
+	mutex_functions(&philo->philo_mtx, UNLOCK);
 	mutex_functions(philo->left_fork, UNLOCK);
 	mutex_functions(philo->right_fork, UNLOCK);
+	return (0);
 }
-
-/**
- * Routine for each philosopher, which consists of eating, sleeping
- * and thinking.
- * @data: Pointer to the data structure holding simulation information.
- * @philo: Pointer to the philosopher performing the routine.
- *
- * The philosopher continuously performs the routine as long as the simulation
- * is running. They eat, sleep, and then think, with respective delays for each
- * action.
- */
-/*static void	philos_routine(t_data *data, t_philo *philo)
-{
-	while (!end_simulation(data))
-	{
-		ft_eat(data, philo);
-		print_status(philo->id, "is sleeping", philo->data);
-		ft_usleep(philo->data->time_to_sleep);
-		print_status(philo->id, "is thinking", philo->data);
-	}
-}*/
 
 /**
  * Simulation for each philosopher thread.
@@ -96,18 +76,11 @@ static void	*dinner_simulation(void *pointer)
 
 	philos = (t_philo *)pointer;
 	data = philos->data;
-
-	mutex_functions(&philos->philo_mtx, LOCK);
-	philos->philo_start = get_time();
-	philos->last_meal = philos->philo_start;
-	mutex_functions(&philos->philo_mtx, UNLOCK);
-
 	if (philos->id % 2 == 0)
 		ft_usleep(data->time_to_eat / 2);
 	while (!is_dead(data))
 	{
-		ft_eat(data, philos);
-		if (is_dead(data))
+		if (ft_eat(data, philos))
 			break ;
 		print_status(philos->id, "is sleeping", philos->data);
 		ft_usleep(philos->data->time_to_sleep);

@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 22:17:54 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 10:05:33 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 16:20:56 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,10 @@ void	ft_destroy(t_data *data)
 	while (i < data->num_philos)
 	{
 		mutex_functions(&data->forks[i], DESTROY);
+		mutex_functions(&data->philos[i].philo_mtx, DESTROY);
 		i++;
 	}
+	mutex_functions(&data->dead_lock, DESTROY);
 	mutex_functions(&data->print_lock, DESTROY);
 	mutex_functions(&data->mutex, DESTROY);
 }

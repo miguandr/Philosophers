@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 22:28:42 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 12:12:34 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 15:57:35 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,35 +65,4 @@ void	print_status(int id, char *str, t_data *data)
 	if (!is_dead(data))
 		printf("%zu %d %s\n", time, id, str);
 	mutex_functions(&data->print_lock, UNLOCK);
-}
-
-/**
- * Increments the count of ready philosophers.
- * @data: Pointer to the data structure holding simulation information.
- *
- * This function locks the main mutex, increments the ready count, and then
- * unlocks the mutex.
- */
-void	set_ready_count(t_data *data)
-{
-	mutex_functions(&data->mutex, LOCK);
-	data->ready_count++;
-	mutex_functions(&data->mutex, UNLOCK);
-}
-
-/**
- * Checks if all philosophers are ready to start the simulation.
- * @data: Pointer to the data structure holding simulation information.
- *
- * This function locks the main mutex to retrieve the current ready count,
- * then unlocks it. It returns true if all philosophers are ready.
- */
-bool	get_philos_ready(t_data *data)
-{
-	int	ready_count;
-
-	mutex_functions(&data->mutex, LOCK);
-	ready_count = data->ready_count;
-	mutex_functions(&data->mutex, UNLOCK);
-	return (ready_count == data->num_philos);
 }
