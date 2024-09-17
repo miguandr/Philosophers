@@ -3,7 +3,7 @@ NAME	= philo
 
 # Compiler and Flags
 CC		= cc
-CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror -fsanitize=address
 
 # Includes
 INC	=	-I ./includes/

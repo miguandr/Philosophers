@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 21:41:12 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 12:41:27 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,27 +30,34 @@ bool	end_simulation(t_data *data)
  * the required number of meals. If all philosophers have eaten, it returns true
  * and prints a message. Otherwise, it returns false.
  */
-static bool	philos_full(t_data *data)
+static int	philos_full(t_data *data)
 {
 	int	i;
 	int	meals_eaten;
 
 	i = 0;
+	meals_eaten = 0;
 	if (data->num_times_to_eat == -1)
-		return (false);
+		return (0);
 	while (i < data->num_philos)
 	{
-		mutex_functions(&data->philos->philo_mtx, LOCK);
-		meals_eaten = data->philos[i].meals_eaten;
-		mutex_functions(&data->philos->philo_mtx, UNLOCK);
-		if (meals_eaten < data->num_times_to_eat)
-			return (false);
+		mutex_functions(&data->philos[i].philo_mtx, LOCK);
+		if (data->philos[i].meals_eaten >= data->num_times_to_eat)
+			meals_eaten++;
+		mutex_functions(&data->philos[i].philo_mtx, UNLOCK);
 		i++;
 	}
-	mutex_functions(&data->print_lock, LOCK);
-	printf("\nAll philosophers have eaten! 🍝\n");
-	mutex_functions(&data->print_lock, UNLOCK);
-	return (true);
+	if (meals_eaten == data->num_philos)
+	{
+		mutex_functions(&data->dead_lock, LOCK);
+		data->dead_flag = 1;
+		mutex_functions(&data->dead_lock, UNLOCK);
+		mutex_functions(&data->print_lock, LOCK);
+		printf("\nAll philosophers have eaten! 🍝\n");
+		mutex_functions(&data->print_lock, UNLOCK);
+		return (1);
+	}
+	return (0);
 }
 
 /**
@@ -62,20 +69,28 @@ static bool	philos_full(t_data *data)
  * last meal, then unlocks it. If the time since their last meal exceeds
  * the time to die, the philosopher is declared dead and the simulation ends.
  */
-static void	philos_dead(t_data *data, t_philo *philo)
+static int	philos_dead(t_data *data, t_philo *philo)
 {
-	size_t	last_meal;
+	int	i;
 
-	mutex_functions(&philo->philo_mtx, LOCK);
-	last_meal = philo->last_meal;
-	mutex_functions(&philo->philo_mtx, UNLOCK);
-	if ((get_time() - last_meal) > data->time_to_die)
+	i = 0;
+	while (i < data->num_philos)
 	{
-		print_status(philo->id, "died", data);
-		mutex_functions(&data->mutex, LOCK);
-		data->end_simulation = true;
-		mutex_functions(&data->mutex, UNLOCK);
+		mutex_functions(&philo[i].philo_mtx, LOCK);
+		if ((get_time() - philo[i].last_meal) >= data->time_to_die
+			&& philo[i].eating == 0)
+		{
+			print_status(philo[i].id, "died", data);
+			mutex_functions(&data->dead_lock, LOCK);
+			data->dead_flag = 1;
+			mutex_functions(&data->dead_lock, UNLOCK);
+			mutex_functions(&philo[i].philo_mtx, UNLOCK);
+			return (1);
+		}
+		mutex_functions(&philo[i].philo_mtx, UNLOCK);
+		i++;
 	}
+	return (0);
 }
 
 /**
@@ -91,25 +106,16 @@ void	*ft_observer(void *pointer)
 {
 	t_data	*data;
 	t_philo	*philo;
-	int		i;
 
 	data = (t_data *)pointer;
-	while (!end_simulation(data))
+	philo = data->philos;
+	while (1)
 	{
-		i = 0;
-		while (i < data->num_philos)
-		{
-			philo = &data->philos[i];
-			philos_dead(data, philo);
-			if (end_simulation(data))
-				break ;
-			i++;
-		}
-		mutex_functions(&data->mutex, LOCK);
-		if (philos_full(data))
-			data->end_simulation = true;
-		mutex_functions(&data->mutex, UNLOCK);
-		ft_usleep(10);
+		if (philos_dead(data, philo) == 1)
+			break ;
+		if (philos_full(data) == 1)
+			break ;
+		//ft_usleep(10);
 	}
 	return (pointer);
 }

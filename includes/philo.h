@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 17:49:08 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 20:31:02 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 12:06:53 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,11 @@ typedef struct s_data
 	size_t		time_to_die;
 	size_t		time_to_eat;
 	size_t		time_to_sleep;
+	size_t		start_simulation;
 	int			num_times_to_eat;
-	size_t		start_simmulation;
 	bool		end_simulation;
+	int			dead_flag; // NEW (check if needed)
+	t_mtx		dead_lock; // NEW
 	t_mtx		print_lock;
 	t_mtx		*forks;
 }	t_data;
@@ -66,10 +68,14 @@ typedef struct s_philo
 	pthread_t	thread;
 	int			id;
 	int			meals_eaten;
+	int			eating;
+	int			dead_philo; // NEW
 	size_t		last_meal;
+	size_t		philo_start;
 	t_mtx		*right_fork;
 	t_mtx		*left_fork;
 	t_mtx		philo_mtx;
+
 }	t_philo;
 
 /*****-Checks-*****/
@@ -85,13 +91,14 @@ int		mutex_error(int status, t_mtx_type type);
 int		thread_funtions(pthread_t *thread, void *(*foo)(void *),
 			void *data, t_mtx_type type);
 int		thread_error(int status, t_mtx_type type);
-int		ft_destroy(t_data *data);
+void	ft_destroy(t_data *data);
 
 /*****-Initialization-*****/
 void	init_data(t_data *data, t_mtx *forks, t_philo *philos, char **value);
 
 /*****-Simulation-*****/
 void	start_program(t_data *data);
+int		is_dead(t_data *data); // NEW
 
 /*****-Simulation Utils-*****/
 void	set_ready_count(t_data *data);

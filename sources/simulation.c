@@ -6,11 +6,23 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 21:35:41 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 12:41:35 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+int	is_dead(t_data *data) // NEW
+{
+	mutex_functions(&data->dead_lock, LOCK);
+	if (data->dead_flag == 1)
+	{
+		mutex_functions(&data->dead_lock, UNLOCK);
+		return (1);
+	}
+	mutex_functions(&data->dead_lock, UNLOCK);
+	return (0);
+}
 
 /**
  * The action a philosopher takes when eating.
@@ -30,20 +42,20 @@ static void	ft_eat(t_data *data, t_philo *philo)
 	{
 		ft_usleep(data->time_to_die);
 		print_status(philo->id, "died", data);
-		mutex_functions(&data->mutex, LOCK);
-		data->end_simulation = true;
-		mutex_functions(&data->mutex, UNLOCK);
 		mutex_functions(philo->right_fork, UNLOCK);
 		return ;
 	}
 	mutex_functions(philo->left_fork, LOCK);
 	print_status(philo->id, "has taken a fork", data);
+	philo->eating = 1;
+	print_status(philo->id, "is eating", data);
 	mutex_functions(&philo->philo_mtx, LOCK);
 	philo->last_meal = get_time();
 	philo->meals_eaten++;
 	mutex_functions(&philo->philo_mtx, UNLOCK);
-	print_status(philo->id, "is eating", data);
+
 	ft_usleep(data->time_to_eat);
+	philo->eating = 0;
 	mutex_functions(philo->left_fork, UNLOCK);
 	mutex_functions(philo->right_fork, UNLOCK);
 }
@@ -58,20 +70,16 @@ static void	ft_eat(t_data *data, t_philo *philo)
  * is running. They eat, sleep, and then think, with respective delays for each
  * action.
  */
-static void	philos_routine(t_data *data, t_philo *philo)
+/*static void	philos_routine(t_data *data, t_philo *philo)
 {
 	while (!end_simulation(data))
 	{
 		ft_eat(data, philo);
-		if (end_simulation(data))
-			break ;
 		print_status(philo->id, "is sleeping", philo->data);
-		if (end_simulation(data))
-			break ;
 		ft_usleep(philo->data->time_to_sleep);
 		print_status(philo->id, "is thinking", philo->data);
 	}
-}
+}*/
 
 /**
  * Simulation for each philosopher thread.
@@ -88,57 +96,24 @@ static void	*dinner_simulation(void *pointer)
 
 	philos = (t_philo *)pointer;
 	data = philos->data;
-	set_ready_count(data);
-	while (!get_philos_ready(data))
-		ft_usleep(1);
-	mutex_functions(&data->mutex, LOCK);
-	data->start_simmulation = get_time();
-	mutex_functions(&data->mutex, UNLOCK);
 
-	mutex_functions(&data->mutex, LOCK);
 	mutex_functions(&philos->philo_mtx, LOCK);
-	philos->last_meal = data->start_simmulation;
+	philos->philo_start = get_time();
+	philos->last_meal = philos->philo_start;
 	mutex_functions(&philos->philo_mtx, UNLOCK);
-	mutex_functions(&data->mutex, UNLOCK);
 
 	if (philos->id % 2 == 0)
 		ft_usleep(data->time_to_eat / 2);
-	while (!data->end_simulation)
-		philos_routine(data, philos);
-	return (NULL);
-}
-
-/**
- * Starts the philosopher threads for the simulation.
- * @data: Pointer to the data structure holding simulation information.
- *
- * This function creates a thread for each philosopher and starts the
- * dining simulation.
- * If thread creation fails, the function terminates and cleans up resources.
- */
-static void	start_philos(t_data *data, pthread_t *observer)
-{
-	int			i;
-	int			status;
-
-
-	i = 0;
-	if (thread_funtions(observer, ft_observer, &data->philos, CREATE))
+	while (!is_dead(data))
 	{
-		ft_destroy(data);
-		return ;
+		ft_eat(data, philos);
+		if (is_dead(data))
+			break ;
+		print_status(philos->id, "is sleeping", philos->data);
+		ft_usleep(philos->data->time_to_sleep);
+		print_status(philos->id, "is thinking", philos->data);
 	}
-	while (i < data->num_philos)
-	{
-		status = thread_funtions(&data->philos[i].thread,
-				dinner_simulation, &data->philos[i], CREATE);
-		if (status != 0)
-		{
-			ft_destroy(data);
-			return ;
-		}
-		i++;
-	}
+	return (pointer);
 }
 
 /**
@@ -157,14 +132,23 @@ void	start_program(t_data *data)
 	i = 0;
 	if (data->num_times_to_eat == 0)
 		return ;
-	start_philos(data, &observer);
+	data->start_simulation = get_time();
+	if (thread_funtions(&observer, ft_observer, &data->philos, CREATE))
+		ft_destroy(data);
 	while (i < data->num_philos)
 	{
-		if (thread_funtions(&data->philos[i].thread, NULL,
-				NULL, JOIN) != 0)
-			return ;
+		if (thread_funtions(&data->philos[i].thread,
+				dinner_simulation, &data->philos[i], CREATE))
+			ft_destroy(data);
+		i++;
+	}
+	i = 0;
+	while (i < data->num_philos)
+	{
+		if (thread_funtions(&data->philos[i].thread, NULL, NULL, JOIN) != 0)
+			ft_destroy(data);
 		i++;
 	}
 	if (thread_funtions(&observer, NULL, NULL, JOIN) != 0)
-		return ;
+		ft_destroy(data);
 }

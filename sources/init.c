@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 21:21:19 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 15:45:41 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 12:07:07 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ static void	init_philos(t_philo *philos, t_data *data)
 		philos[i].data = data;
 		philos[i].id = i + 1;
 		philos[i].meals_eaten = 0;
+		philos[i].eating = 0;
 		philos[i].last_meal = get_time();
 		if (mutex_functions(&philos[i].philo_mtx, INIT) != 0)
 			return ;
@@ -103,9 +104,11 @@ void	init_data(t_data *data, t_mtx *forks, t_philo *philos, char **value)
 	data->forks = forks;
 	data->end_simulation = false;
 	data->ready_count = 0;
+	data->dead_flag = 0;
 	init_input(data, value);
 	if ((mutex_functions(&data->mutex, INIT) != 0
-			|| mutex_functions(&data->print_lock, INIT) != 0))
+			|| mutex_functions(&data->print_lock, INIT) != 0
+			|| mutex_functions(&data->dead_lock, INIT) != 0))
 		return ;
 	i = 0;
 	while (i < data->num_philos)

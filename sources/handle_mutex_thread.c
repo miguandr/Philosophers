@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 22:17:54 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/12 14:32:38 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/17 10:05:33 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,24 +123,16 @@ int	thread_funtions(pthread_t *thread, void *(*foo)(void *),
  * used in the simulation, destroying each one. Returns 0 on success,
  * or an error code if any mutex fails to be destroyed.
  */
-int	ft_destroy(t_data *data)
+void	ft_destroy(t_data *data)
 {
 	int	i;
-	int	status;
 
 	i = 0;
 	while (i < data->num_philos)
 	{
-		status = mutex_functions(&data->forks[i], DESTROY);
-		if (status != 0)
-			return (status);
+		mutex_functions(&data->forks[i], DESTROY);
 		i++;
 	}
-	status = mutex_functions(&data->print_lock, DESTROY);
-	if (status != 0)
-		return (status);
-	status = mutex_functions(&data->mutex, DESTROY);
-	if (status != 0)
-		return (status);
-	return (0);
+	mutex_functions(&data->print_lock, DESTROY);
+	mutex_functions(&data->mutex, DESTROY);
 }
