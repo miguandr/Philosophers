@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 16:15:39 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/28 16:08:12 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,24 @@ int	is_dead(t_data *data)
 	return (0);
 }
 
+void	take_forks(t_philo *philo)
+{
+	if (philo->id % 2 == 0)
+	{
+		pthread_mutex_lock(philo->right_fork);
+		print_status(philo->id, "has taken a fork", philo->data);
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo->id, "has taken a fork", philo->data);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->left_fork);
+		print_status(philo->id, "has taken a fork", philo->data);
+		pthread_mutex_lock(philo->right_fork);
+		print_status(philo->id, "has taken a fork", philo->data);
+	}
+}
+
 /**
  * The action a philosopher takes when eating.
  * @data: Pointer to the data structure holding simulation information.
@@ -34,18 +52,9 @@ int	is_dead(t_data *data)
  * left fork, update the last meal time, and increment their meals eaten counter.
  * After eating for the required time, the forks are unlocked.
  */
-static int	ft_eat(t_data *data, t_philo *philo)
+static void	ft_eat(t_data *data, t_philo *philo)
 {
-	mutex_functions(philo->right_fork, LOCK);
-	print_status(philo->id, "has taken a fork", data);
-	if (data->num_philos == 1)
-	{
-		ft_usleep(data->time_to_die);
-		mutex_functions(philo->right_fork, UNLOCK);
-		return (1);
-	}
-	mutex_functions(philo->left_fork, LOCK);
-	print_status(philo->id, "has taken a fork", data);
+	take_forks(philo);
 	print_status(philo->id, "is eating", data);
 	mutex_functions(&philo->philo_mtx, LOCK);
 	philo->eating = 1;
@@ -58,7 +67,6 @@ static int	ft_eat(t_data *data, t_philo *philo)
 	mutex_functions(&philo->philo_mtx, UNLOCK);
 	mutex_functions(philo->left_fork, UNLOCK);
 	mutex_functions(philo->right_fork, UNLOCK);
-	return (0);
 }
 
 /**
@@ -76,15 +84,19 @@ static void	*dinner_simulation(void *pointer)
 
 	philos = (t_philo *)pointer;
 	data = philos->data;
-	if (philos->id % 2 == 0)
-		ft_usleep(data->time_to_eat / 2);
+	//if (philos->id % 2 == 0)
+	//	ft_usleep(data->time_to_eat / 2);
 	while (!is_dead(data))
 	{
-		if (ft_eat(data, philos))
-			break ;
-		print_status(philos->id, "is sleeping", philos->data);
-		ft_usleep(philos->data->time_to_sleep);
-		print_status(philos->id, "is thinking", philos->data);
+		if (data->num_philos != 1)
+		{
+			ft_eat(data, philos);
+			print_status(philos->id, "is sleeping", philos->data);
+			ft_usleep(philos->data->time_to_sleep);
+			print_status(philos->id, "is thinking", philos->data);
+		}
+		else
+			ft_usleep(data->time_to_die);
 	}
 	return (pointer);
 }

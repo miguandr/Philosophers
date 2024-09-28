@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 16:01:27 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/28 16:00:18 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static int	philos_dead(t_data *data, t_philo *philo)
 		last_meal = philo[i].last_meal;
 		eating = philo[i].eating;
 		mutex_functions(&philo[i].philo_mtx, UNLOCK);
-		if ((get_time() - last_meal) >= data->time_to_die
+		if ((get_time() - last_meal) > data->time_to_die
 			&& !eating)
 		{
 			print_status(philo[i].id, "died", data);
@@ -111,7 +111,7 @@ void	*ft_observer(void *pointer)
 				printf("\nAll philosophers have eaten! 🍝\n");
 			break ;
 		}
-		ft_usleep(10);
+		ft_usleep(5);
 	}
 	return (pointer);
 }
