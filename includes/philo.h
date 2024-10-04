@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 17:49:08 by miguandr          #+#    #+#             */
-/*   Updated: 2024/10/04 16:05:31 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/10/04 17:12:47 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ typedef struct s_philo
 	int			eating;
 	bool		has_eaten;
 	size_t		last_meal;
-	//size_t		philo_start;
 	t_mtx		*right_fork;
 	t_mtx		*left_fork;
 	t_mtx		philo_mtx;
@@ -98,12 +97,12 @@ void	init_data(t_data *data, t_mtx *forks, t_philo *philos, char **value);
 
 /*****-Simulation-*****/
 void	start_program(t_data *data);
-int		is_dead(t_data *data);
 
 /*****-Simulation Utils-*****/
-size_t	get_time(void);
-void	print_status(int id, char *str, t_data *data);
 int		ft_usleep(size_t milliseconds);
+size_t	get_time(void);
+int		is_dead(t_data *data);
+void	print_status(int id, char *str, t_data *data);
 
 /*****-Observer-*****/
 void	*ft_observer(void *pointer);

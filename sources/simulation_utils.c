@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 22:28:42 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 15:57:35 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/10/04 17:12:01 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,18 @@ size_t	get_time(void)
 	if (gettimeofday(&time, NULL) == -1)
 		ft_error(7);
 	return ((time.tv_sec * 1000) + (time.tv_usec / 1000));
+}
+
+int	is_dead(t_data *data)
+{
+	mutex_functions(&data->dead_lock, LOCK);
+	if (data->dead_flag == 1)
+	{
+		mutex_functions(&data->dead_lock, UNLOCK);
+		return (1);
+	}
+	mutex_functions(&data->dead_lock, UNLOCK);
+	return (0);
 }
 
 /**
