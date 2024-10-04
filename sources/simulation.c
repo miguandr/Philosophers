@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 19:02:27 by miguandr          #+#    #+#             */
-/*   Updated: 2024/10/04 17:19:23 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/10/04 19:39:39 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,12 @@ static void	*dinner_simulation(void *pointer)
 {
 	t_philo	*philos;
 	t_data	*data;
+	size_t	think_time;
 
 	philos = (t_philo *)pointer;
 	data = philos->data;
+	think_time = (data->time_to_die - data->time_to_eat
+			- data->time_to_sleep) / 2;
 	while (!is_dead(data))
 	{
 		if (data->num_philos != 1)
@@ -93,6 +96,7 @@ static void	*dinner_simulation(void *pointer)
 			print_status(philos->id, "is sleeping", philos->data);
 			ft_usleep(philos->data->time_to_sleep);
 			print_status(philos->id, "is thinking", philos->data);
+			ft_usleep(think_time);
 		}
 		else
 			ft_usleep(data->time_to_die);
