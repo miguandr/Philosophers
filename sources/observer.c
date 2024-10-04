@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 23:20:55 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/28 16:00:18 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/09/28 16:22:59 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void	*ft_observer(void *pointer)
 				printf("\nAll philosophers have eaten! 🍝\n");
 			break ;
 		}
-		ft_usleep(5);
+		ft_usleep(10);
 	}
 	return (pointer);
 }

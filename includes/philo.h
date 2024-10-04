@@ -6,7 +6,7 @@
 /*   By: miguandr <miguandr@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/23 17:49:08 by miguandr          #+#    #+#             */
-/*   Updated: 2024/09/17 16:10:10 by miguandr         ###   ########.fr       */
+/*   Updated: 2024/10/04 16:05:31 by miguandr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_philo
 	int			id;
 	int			meals_eaten;
 	int			eating;
+	bool		has_eaten;
 	size_t		last_meal;
 	//size_t		philo_start;
 	t_mtx		*right_fork;
